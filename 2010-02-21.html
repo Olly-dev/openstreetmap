@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- Nous chargeons les fichiers CDN de Leaflet. Le CSS AVANT le JS -->
+		
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+		integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+		crossorigin=""/>
+        <style type="text/css">
+            #map{ 
+                height:400px;
+            }
+        </style>
+		
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		
+        <title>Carte</title>
+		
+		 <script
+		  src="https://code.jquery.com/jquery-3.5.0.js"
+		  integrity="sha256-r/AaFHrszJtwpe+tHyNi/XCfMxYpbsRg2Uqn0x3s2zc="
+		  crossorigin="anonymous"></script>
+
+    </head>
+    <body>
+        <div id="map">
+	    <!-- Ici s'affichera la carte -->
+		</div>
+
+        <!-- Fichiers Javascript -->
+		
+		 <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+		integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+   
+	<script type="text/javascript">
+            // On initialise la latitude et la longitude de Paris (centre de la carte)
+            var lat = -21.144752 ;
+            var lon = 55.459980;
+            var macarte = null;
+            // Fonction d'initialisation de la carte
+            function initMap() {
+                // Créer l'objet "macarte" et l'insèrer dans l'élément HTML qui a l'ID "map"
+                macarte = L.map('map').setView([lat, lon], 13);
+
+				
+				$.getJSON('meteo.json', function(data) {
+					$.each(data, function(k, v) {
+					  
+					  v.previsions.prevision.forEach(e => {
+						console.log(e["-date"]);
+						
+						if(e["-date"] == "2010-02-21") {
+						
+							e.ville.forEach(element => {
+									
+							if (element["-id"] == "CILAOS") {
+								var lat = -21.144752 ;
+								var lon = 55.459980;
+									
+							} else if ( element["-id"] == "LA PLAINE DES CAFRES" ) {
+								var lat = -21.218438 ;
+								var lon = 55.557360;
+							} else if ( element["-id"] == "LA PLAINE DES PALMISTES" ) {
+								var lat = -21.147049 ;
+								var lon = 55.610324;
+							} else if ( element["-id"] == "LE PORT" ) {
+								var lat = -20.944763 ;
+								var lon = 55.295098;
+							} else if ( element["-id"] == "LE TAMPON" ) {
+								var lat = -21.285793 ;
+								var lon = 55.520768;
+							} else if ( element["-id"] == "SAINT-ANDRE" ) {
+								var lat = -20.962605;
+								var lon = 55.647352;
+							} else if ( element["-id"] == "SAINT-BENOIT" ) {
+								var lat = -21.042415;
+								var lon = 55.718157;
+							} else if ( element["-id"] == "SAINT-DENIS" ) {
+								var lat = -20.886596;
+								var lon = 55.455086;
+							} else if ( element["-id"] == "SAINT-LEU" ) {
+								var lat = -21.172492;
+								var lon = 55.287266;
+							} else if ( element["-id"] == "SAINT-LOUIS" ) {
+								var lat = -21.284216;
+								var lon = 55.415844;
+							} else if ( element["-id"] == "SAINT-PAUL" ) {
+								var lat = -21.014754;
+								var lon = 55.271356;
+							} else if ( element["-id"] == "SAINT-PHILIPPE" ) {
+								var lat = -21.357955;
+								var lon = 55.764730;
+							} else if ( element["-id"] == "SAINT-PIERRE" ) {
+								var lat = -21.332495;
+								var lon = 55.472207;
+							} else if ( element["-id"] == "SAINTE-MARIE" ) {
+								var lat = -20.900847;
+								var lon = 55.546915;
+							} else if ( element["-id"] == "SAINTE-ROSE" ) {
+								var lat = -21.132800;
+								var lon = 55.791790;
+							}
+							
+							var marker = L.marker([lat, lon]).addTo(macarte);
+							marker.bindPopup("<b>Ville = "+element["-id"]+"</b><br><b>Température Min = "+element["-temperature_mini"]+"</b><br><b>Température Max = "+element["-temperature_maxi"]+"</b><br><b>Temps = "+element["-temps"]+"</b><br><b>Force du vent = "+element["-vent_force"]+"</b><br><b>Rafales = "+element["-vent_rafales"]+"</b><br><b>humidite = "+element["-humidite"]+"</b>.");	
+									
+							})
+						
+						}
+						});	
+					})
+					
+				});
+				
+				
+                // Leaflet ne récupère pas les cartes (tiles) sur un serveur par défaut. Nous devons lui préciser où nous souhaitons les récupérer. Ici, openstreetmap.fr
+                L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                    // Il est toujours bien de laisser le lien vers la source des données
+                    attribution: 'données © <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+                    minZoom: 1,
+                    maxZoom: 20
+                }).addTo(macarte);
+            }
+            window.onload = function(){
+			// Fonction d'initialisation qui s'exécute lorsque le DOM est chargé
+			initMap(); 
+            };
+			
+			
+        </script>
+		<br>
+		<table class="table">
+			  <thead>
+				<tr>
+				  <th scope="col"><a href="index.html">2010-02-18</a></th>
+				  <th scope="col"><a href="2010-02-19.html" >2010-02-19</a></th>
+				  <th scope="col"><a href="2010-02-20.html" >2010-02-20</a></th>
+				  <th scope="col"><a href="2010-02-21.html" >2010-02-21</a></th>
+				   <th scope="col"><a href="2010-02-22.html" >2010-02-22</a></th>
+				</tr>
+			  </thead>
+		 
+		</table>
+    </body>
+</html>
